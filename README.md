@@ -23,8 +23,9 @@ In order to work with kubernetes
 - a cluster is a set of nodes **( Master node / Worker node)**
 - Node **-->** VM or physical machine
 - Master node is the brain of the Cluster
+- Master node and Worker node communicate via the **Kubelet** 
 
-![Kubernetes Cluster.png](images%2FKubernetes%20Cluster.png)
+<img src="images/Kubernetes Cluster.png" width="740" height="400"></img>
 
 
 ### Master node
@@ -33,7 +34,8 @@ In order to work with kubernetes
 - Master node runs all cluster's control plane services
 - the brain where control and decisions are made
 
-![Master node.png](images%2FMaster%20node.png)
+
+<img src="images/Master node.png" width="740" height="400"></img>
 
 #### API Server (**api**)
 
@@ -67,7 +69,8 @@ In order to work with kubernetes
   - Namespace
   - Service Accounts
  
-![Controller manager.png](images%2FController%20manager.png)
+
+<img src="images/Controller manager.png" width="540" height="240"></img>
 
 
 #### Cloud Controller manager (**c-c-m**)
@@ -79,7 +82,8 @@ In order to work with kubernetes
 
 ### Example of creating a loadbalancer
 
-![Loadbalancer Ingress.png](images%2FLoadbalancer%20Ingress.png)
+
+<img src="images/Loadbalancer Ingress.png" width="940" height="380"></img>
 
 
 ### Worker Node
@@ -91,8 +95,8 @@ In order to work with kubernetes
 - provides running environment for our applications 
 
 
+<img src="images/WorkerNode.png" width="740" height="360"></img>
 
-![WorkerNode.png](images%2FWorkerNode.png)
 
 #### Kubelet
 
@@ -121,7 +125,7 @@ In order to work with kubernetes
 
 ### Running Kubernetes 
 
-- Running kubernetes ourself ( really hard )
+- Running kubernetes ourselves ( **really hard** )
 - using managed k8s
   - EKS - Elastic k8s Service
   - GKS - Google k8s Engine
@@ -129,7 +133,205 @@ In order to work with kubernetes
   - others
 
 <ins>Managed kubernetes means that the Master node including its services are fully managed
+
 for us and we just have to focus on the worker nodes and this where our applications do run</ins>
+
+
+### Running Kube Cluster locally (**Creating a local cluster**)
+
+- minikube
+- kind
+- docker
+
+
+  - only used for leaning purposes
+  - Local development CI
+  - [**Important Note**](): Do not use it for any environment including production
+
+### Docker
+
+Check this link : https://docs.docker.com/get-started
+
+```
+docker version
+```
+### Minikube
+
+minikube is a local kubernetes 
+
+Check this link : https://minikube.sigs.k8s.io/docs/start/
+
+```
+minikube version
+```
+#### Starting the cluster 
+
+```
+minikube start
+```
+#### Checking status
+
+```
+minikube status
+```
+if minikube fails to start check this link : https://minikube.sigs.k8s.io/docs/drivers/
+
+#### Checking ip address for Master node 
+
+```
+minikube ip
+```
+![master node ip address.png](images%2Fmaster%20node%20ip%20address.png)
+
+### Kubectl
+
+kubectl will allow us to interact with our cluster from our machine 
+
+- K8s Command line tool 
+- Run commands gains our cluster (Deploy / Inspect / Edit Ressources / Debug / View Logs)
+
+check this link : https://kubernetes.io/docs/tasks/tools/
+
+![kubectl status.png](images%2Fkubectl%20status.png)
+
+#### checking Kubectl version
+
+![kubectl version.png](images%2Fkubectl%20version.png)
+
+### Kubernetes hello world
+
+```
+docker run --rm -p 80:80 amigoscode/kubernetes:hello-world
+```
+
+##### Creating a pod with a container inside of it 
+
+```
+kubectl run hello-world --image=amigoscode/kubernetes:hello-world --port=80
+```
+##### display pods
+
+![display pods.png](images%2Fdisplay%20pods.png)
+
+##### Access the application within the pod
+
+```
+kubectl port-forward pod/hello-world 8080:80
+```
+![port-forward.png](images%2Fport-forward.png)
+
+##### deleting the pod
+```
+kubectl delete pod hello-world
+```
+
+### exploring the cluster
+
+##### displaying nodes
+```
+kubectl get nodes
+```
+
+##### displaying all pods in all namespace
+
+```
+kubectl get pods -A
+```
+
+![display all pods.png](images%2Fdisplay%20all%20pods.png)
+
+##### After creating hello-world pod
+
+![display all pods 2.png](images%2Fdisplay%20all%20pods%202.png)
+
+<ins>Note that we don't have Cloud-Controller-Manager because we are not running Kubernetes within AWS or Google cloud, we are running it within our machine</ins>
+
+### SSH into Nodes
+
+```
+minikube ssh --node=Node_Name
+minikube ssh --node=minikube
+minikube ssh
+```
+
+##### Stopping the cluster
+
+```
+minikube stop
+```
+
+##### Fully deleting the cluster
+
+```
+minikube delete
+```
+
+### Cluster with 2 Nodes (1 Master Node + 1 Worker Node)
+
+We intend to deploy everything on Worker Node
+
+#### Creating a cluster with 2 Nodes 
+```
+minikube start --help
+minikube start --nodes=2
+```
+
+#### Displaying Cluster pods / nodes
+
+- Nodes => VM or Physical machines
+- Pods => Containers
+
+```
+minikube status
+kubectl get nodes 
+kubectl get pods -A
+```
+
+![2 Nodes.png](images%2F2%20Nodes.png)
+
+#### Displaying ip addresses for Master node + Worker node
+```
+# Master Node (returns 192.168.49.2)
+minikube ip
+
+# Worker Node (returns 192.168.49.3)
+minikube ip --node=minikube-m02
+```
+
+<img src="images/Clsuter.png" width="740" height="400"></img>
+
+### Minikube logs
+
+```
+minikube logs
+
+# '-f' flag is used for debbuging purposes to tail our log
+minikube logs --node='minikube-m02' -f
+```
+### Pods
+
+Is the smallest deployable unit
+
+<img src="images/Pods.png" width="740" height="400"></img>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## TroubleShooting 
+
+in case you get ImagePullBackoff 
+
+check this video link : https://www.youtube.com/watch?v=1q7RLvwdkyo
 
 
 
