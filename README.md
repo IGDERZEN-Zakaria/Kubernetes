@@ -83,7 +83,7 @@ In order to work with kubernetes
 ### Example of creating a loadbalancer
 
 
-<img src="images/Loadbalancer Ingress.png" width="940" height="380"></img>
+<img src="images/Loadbalancer Ingress.png" width="940" height="350"></img>
 
 
 ### Worker Node
