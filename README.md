@@ -375,10 +375,11 @@ in case you get ImagePullBackoff
 
 check this video link : https://www.youtube.com/watch?v=1q7RLvwdkyo
 
+### Kubernetes Plugin
 
+to add a new template  check this image
 
-
-
+![Templates.png](images%2FTemplates.png)
 
 
 
