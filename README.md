@@ -3,8 +3,8 @@
 ##  Prerequisites
 In order to work with kubernetes
 
-- Docker 23.0.1
-- Docker Desktop 4.17.0
+- Docker 23.0.2
+- Docker Desktop 4.20.0
 
 ## Getting Started
 
@@ -310,10 +310,52 @@ minikube logs --node='minikube-m02' -f
 ```
 ### Pods
 
-Is the smallest deployable unit
+- Is the smallest deployable unit
+- Group of 1 or more containers
+- Shares network and volumes
+- Never use pod on its own , always use controllers instead (ex: deployment)
+- Ephemeral or disposable 
 
 <img src="images/Pods.png" width="740" height="400"></img>
 
+
+### Creating Pods
+
+- **Imperative command** 
+- **Declarative configuration**
+
+<img src="images/Imperative.png" width="340" height="200"></img>
+
+<img src="images/Declarative.png" width="480" height="240"></img>
+
+
+#### Declarative vs Imperative
+
+- **Imperative**
+  - Learning
+  - Troubleshooting
+  - Experimenting "kubectl"
+
+- **Declarative**
+  - Reproductible
+  - Best Practices
+
+
+### Creating pods with Imperative command
+
+```
+kubectl run hello-world --image=amigoscode/kubernetes:hello-world --port=80
+kubectl get pods
+```
+<ins>Note</ins>
+In order to access the application tuning on the pod we can use port-forward, 
+but it's mainly used for **testing purposes**
+
+```
+kubectl port-forward pod/hello-world  8080:80
+```
+
+### Creating pods with Declarative configuration
 
 
 
