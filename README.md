@@ -476,7 +476,9 @@ check this link : https://kubernetes.io/docs/reference/kubectl/cheatsheet
 - Zero downtime deployments
 - Creating ReplicaSet
 
-
+```
+kubectl apply -f deployment.yaml
+```
 
 
 
