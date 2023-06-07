@@ -357,6 +357,127 @@ kubectl port-forward pod/hello-world  8080:80
 
 ### Creating pods with Declarative configuration
 
+```
+cd Desktop/Kube/yamls
+kubectl apply -f pod.yml 
+kubectl get pods
+```
+
+-f, --filename=[]:
+The files that contain the configurations to apply (works on json or yaml files).
+
+
+### Create and delete ressources
+
+Namespaces are a way to organize clusters into virtual sub-clusters
+
+```
+kubectl get namespaces
+# or
+kubectl get ns
+```
+
+![namespaces.png](images%2Fnamespaces.png)
+
+```
+cd Desktop/Kube/yamls
+kubectl apply -f pod.yml 
+kubectl get pods
+kubectl delete -f pod.yml 
+kubectl get pods
+```
+
+### List ressources
+
+```
+# list all ressources (default namespace)
+kubectl get all
+
+# list all ressources in all namespaces
+kubectl get all -A
+```
+
+![All ressources.png](images%2FAll%20ressources.png)
+
+
+```
+# getting all pods on kube-system namespace
+kubectl get pod --namespace=kube-system
+# or
+kubectl get pod -n kube-system
+```
+
+### Describe a ressource
+
+```
+kubectl describe pod hello-world
+
+# Short version
+kubectl get pod hello-world -o wide
+
+# To get pod definition
+kubectl get pod hello-world -o yaml 
+# or 
+kubectl get pod hello-world -o json
+```
+
+### Debugging 
+
+```
+kubectl logs hello-world
+# tailling the logs 
+kubectl logs hello-world -f
+
+# specify the container withing the pod name 
+
+kubectl logs hello-world -c hello-world
+kubectl logs Pod_Name -c Container_Name
+```
+
+### Shell access to a running pod
+
+```
+kubectl exec -it hello-world -- sh 
+#or 
+kubectl exec -it hello-world -- bash 
+#or 
+kubectl exec -it hello-world -c hello-world -- sh
+
+kubectl exec hello-world ls
+```
+
+### Access Pod via port-forward
+
+```
+kubectl port-forward hello-world 8082:80
+#or
+kubectl port-forward pod/hello-world 8082:80
+kubectl port-forward service/Service_Name 8081:80
+```
+
+### List all resources types + Cheat Sheet
+```
+kubectl api-resources
+kubectl get no -o wide
+kubectl --help
+```
+
+check this link : https://kubernetes.io/docs/reference/kubectl/cheatsheet
+
+### Using Pods
+
+- Never deploy pods using **kind:Pod**
+- Pods are ephemeral ( expected to die / Short lifespan)
+- Pods on their own don't self-heal
+
+### Deployments
+
+- Manages release of new application
+- Zero downtime deployments
+- Creating ReplicaSet
+
+
+
 
 
 
