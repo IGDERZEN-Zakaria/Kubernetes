@@ -10,7 +10,7 @@ spec:
       image: amigoscode/kubernetes:hello-world
       resources:
         limits:
-          memory: "128i"
+          memory: "128Mi"
           cpu: "500m"
       ports:
         - containerPort: 80
