@@ -477,8 +477,110 @@ check this link : https://kubernetes.io/docs/reference/kubectl/cheatsheet
 - Creating ReplicaSet
 
 ```
-kubectl apply -f deployment.yaml
+kubectl apply -f deployment.yml
+kubectl get deployments
+kubectl describe deployment hello-world
+
+kubectl delete deployment hello-world
+#or 
+kubectl delete -f deployment.yml
 ```
+
+### ReplicaSets
+
+- Is a background control loop that ensures that the number of Pods are always present on the Cluster
+- Like Pods never create ReplicaSets on their own always use Deployments
+- If we want to delete a ReplicaSet we have to delete the Deployment instead of deleting the ReplicaSet
+
+we add
+
+**spec:**
+
+  **replicas: 3**
+
+to deployment.yml to **scale our Deployment Replicas**
+
+```
+kubectl apply -f deployment.yml 
+kubectl port-forward deployment/hello-world 8081:80
+```
+- We should be using Services to access out applications instead of using Port-forward
+
+
+![3 pods.png](images%2F3%20pods.png)
+
+```
+kubectl get rs
+kubectl describe rs hello-world
+```
+
+![replicas.png](images%2Freplicas.png)
+
+### Deployment and Rolling Updates
+
+Live display of Pods
+
+```
+kubectl get pods -w
+```
+
+we change the configuration as below 
+
+![rollback.png](images%2Frollback.png)
+
+```
+# Applying the updated config 
+
+kubectl apply -f deployment.yml
+kubectl get pods -w
+
+# to check the new version  
+kubectl port-forward deployment/hello-world 8081:80
+```
+
+<ins>Note that : the old replicaSet will still exist to facilitate rollbacks</ins>
+
+<img src="images/rollback_replicaSet.png" width="740" height="360"></img>
+
+#### Checking ReplicaSets
+
+```
+# should display 2 ReplicaSet
+
+kubectl get rs 
+```
+
+#### Display history of changes of configuration
+
+```
+kubectl rollout history deployment hello-world
+```
+
+![history.png](images%2Fhistory.png)
+
+#### Rollback to a specific revision of configuration
+
+```
+# if we don't specify the revision it will go back to the previous one 
+
+kubectl rollout undo deployment hello-world --to-revision=1
+kubectl rollout history deployment hello-world
+kubectl port-forward deployment/hello-world 8081:80
+```
+
+![history 2.png](images%2Fhistory%202.png)
+
+
+#### get more information about a specific revision
+
+```
+kubectl rollout history deployment hello-world --revision=4
+```
+
+![history 3.png](images%2Fhistory%203.png)
+
+
+### Managing our Cluster Using Declarative Approach
 
 
 

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: hello-world
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: hello-world
@@ -11,10 +11,13 @@ spec:
     metadata:
       labels:
         app: hello-world
+      annotations:
+        kubernetes.io/change-cause: "amigoscode/kubernetes:hello-world-v2"
     spec:
       containers:
         - name: hello-world
-          image: amigoscode/kubernetes:hello-world
+#          image: amigoscode/kubernetes:hello-world
+          image: amigoscode/kubernetes:hello-world-v2
           resources:
             limits:
               memory: "128Mi"
