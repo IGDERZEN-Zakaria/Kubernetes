@@ -583,6 +583,39 @@ kubectl rollout history deployment hello-world --revision=4
 ### Managing our Cluster Using Declarative Approach
 
 
+```
+kubectl apply -f deployment.yml
+kubectl get pods -w
+kubectl port-forward deployment/hello-world 8081:80
+kubectl rollout history deployment hello-world
+```
+
+![history 4.png](images%2Fhistory%204.png)
+
+**Note that : It's important to keep the declarative approche by using a Versioning system (Git) to track the configuration changes
+instead of using ***kubernetes.io/change-cause*** to always be able to see the current state of our config**
+
+### Revision history limit
+
+by default kubernetes keeps only 10 version of rollout history elements,
+we can override that by altering the property 
+- Example:  **spec.revisionHistoryLimit : 25**
+
+### Configure Deployment Rolling Strategy
+
+- Recreate
+- Rolling Update
+
+**Rolling update** is the **better strategy** will **keep** the previous version running until the new version is running and fully  healthy
+on the other hand **Recreate** will **delete** all the running pods before creating a new version of our application which results in **downtime**
+
+
+
+
+
+
+
+
 
 
 
