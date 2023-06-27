@@ -44,7 +44,7 @@ In order to work with kubernetes
 - Exposes Restfull  API on **port 443**
 - Authentication and Authorization checks 
 - uses Kubectl client to communicate externally **kubectl apply -f**
-
+ddddzzzz
 #### Cluster store | state (**etcd**)
 
 - stores configuration and the state of the entire cluster
