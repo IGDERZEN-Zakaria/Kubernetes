@@ -3,8 +3,9 @@
 ##  Prerequisites
 In order to work with kubernetes
 
-- Docker 23.0.2
-- Docker Desktop 4.20.0
+- Docker 24.0.2
+- Docker Desktop 4.21.0
+- minikube 1.30.1
 
 ## Getting Started
 
@@ -367,7 +368,7 @@ kubectl get pods
 The files that contain the configurations to apply (works on json or yaml files).
 
 
-### Create and delete ressources
+### Create and delete resources
 
 Namespaces are a way to organize clusters into virtual sub-clusters
 
@@ -494,9 +495,7 @@ kubectl delete -f deployment.yml
 
 we add
 
-**spec:**
-
-  **replicas: 3**
+**spec.replicas: 3**
 
 to deployment.yml to **scale our Deployment Replicas**
 
@@ -609,21 +608,79 @@ we can override that by altering the property
 **Rolling update** is the **better strategy** will **keep** the previous version running until the new version is running and fully  healthy
 on the other hand **Recreate** will **delete** all the running pods before creating a new version of our application which results in **downtime**
 
+- we can specify the maximum number of pods that can be unavailable in
+
+**spec.strategy.rollingUpdate.maxUnavailable: 20%**
+
+![RollingUpdate.png](images%2FRollingUpdate.png)
+ 
+- we can also specify The maximum number of pods that can be scheduled above the desired number of pods.
+**(never have more than 1 pod above the desired state)**
+
+**spec.strategy.rollingUpdate.maxSurge: 20%**
+
+#### Applying the Configuration 
+
+```
+kubectl apply -f deployment.yml
+cd Desktop/Kubernetes/yamls/
+kubectl rollout history deployment hello-world
+kubectl rollout status deployment hello-world
+kubectl get pods
+kubectl port-forward deployment/hello-world 8080:80
+``` 
+
+### Pausing and Resuming Rollouts
+
+``` 
+kubectl rollout --help
+
+#Example
+kubectl rollout pause deployment hello-world
+kubectl rollout resume deployment hello-world
+``` 
+
+## Services
+
+- We should not use **port-forward** (Only for testing)
+- We should never rely on Pod Ip Address because if we scale up or down , we will have new IPs
+- We use Services to allow the client to communicate with our applications 
+
+<img src="images/Services.png" width="740" height="400"></img>
 
 
+### Services 
 
+- Stable IP address
+- Stable DNS Name
+- Stable Port
 
+### Types of Services
 
+- ClusterIp (Default)
+- NodePort
+- ExternalName
+- LoadBalancer
 
+We create our customer-deployment.yml
 
+``` 
+cd Desktop/Kubernetes/yamls/
+kubectl apply -f customer-deployment.yml 
+kubectl get pods
+kubectl logs customer-5fb866577b-bxxrw
+kubectl get all
+``` 
 
+![ServicesGetAll.png](images%2FServicesGetAll.png)
 
+``` 
+kubectl port-forward deployment/customer 8080:8080
+``` 
 
+check this uri : http://localhost:8080/api/v1/customer
 
-
-
-
-
+ 
 
 
 
