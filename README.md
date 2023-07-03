@@ -45,7 +45,7 @@ In order to work with kubernetes
 - Exposes Restfull  API on **port 443**
 - Authentication and Authorization checks 
 - uses Kubectl client to communicate externally **kubectl apply -f**
-ddddzzzz
+
 #### Cluster store | state (**etcd**)
 
 - stores configuration and the state of the entire cluster
@@ -338,7 +338,7 @@ minikube logs --node='minikube-m02' -f
   - Experimenting "kubectl"
 
 - **Declarative**
-  - Reproductible
+  - Reproducible
   - Best Practices
 
 
@@ -680,7 +680,169 @@ kubectl port-forward deployment/customer 8080:8080
 
 check this uri : http://localhost:8080/api/v1/customer
 
- 
+### Microservices Communication using POD IP Address 
+
+``` 
+kubectl get pods
+kubectl describe pod order-787794b8c-lxrzb
+``` 
+
+![deploy_order.png](images%2Fdeploy_order.png)
+
+After that we add the IP Address of the ORDER_SERVICE as an environment variable in the customer-deployment.yml in order to communicate with it
+
+```
+kubectl apply -f customer-deployment.yml
+kubectl port-forward deployment/customer 8080:8080
+
+``` 
+check this uri :
+
+- http://localhost:8080/api/v1/customer
+- http://localhost:8080/api/v1/customer/1/orders
+
+![orders.png](images%2Forders.png)
+
+```
+kubectl get pods
+``` 
+
+
+![getpods0.png](images%2Fgetpods0.png)
+
+``` 
+kubect describe pod order-787794b8c-h8vp7
+kubect describe pod oorder-787794b8c-wq9zf
+
+
+# We notice that pods have been deleted 
+# and new ones have been created
+
+kubectl get pods
+kubectl port-forward deployment/customer 8080:8080
+``` 
+
+![getpods.png](images%2Fgetpods.png)
+
+check this uri :
+
+- http://localhost:8080/api/v1/customer/1/orders
+
+we notice that the Customer Service can't communicate with the Order Service
+
+because the IP Address of the ORDER_SERVICE has changed (different pod than the previous one)
+
+**That resumes why we should never use POD IP Address and use Services instead**
+
+### Cluster IP Service
+
+- Default Kubernetes Service
+- Only Internal access. No External
+
+
+<img src="images/SERVICE order.png" width="740" height="350"></img>
+
+Cluster IP Service will send the traffic from the Customer Microservice to any Pod that is healthy of Order Microservice
+
+We can send a request from the customer service to the order service using 
+
+- **Service IP Address & Port**
+- **DNS & Port**
+
+we create the Order service with the order-deployment.yml file 
+
+<img src="images/ClusterIPport.png" width="440" height="300"></img>
+
+```
+kubectl apply -f order-deployment.yml 
+``` 
+**Now from the Customer Microservice we need to point to the Order Service instead of the Pod Order**
+
+```
+kubectl get service
+``` 
+
+![getService.png](images%2FgetService.png)
+
+```
+kubectl describe service/order
+``` 
+
+![describeOrder.png](images%2FdescribeOrder.png)
+
+```
+kubectl get endpoints
+``` 
+
+![endpoints.png](images%2Fendpoints.png)
+
+``` 
+kubectl apply -f customer-deployment.yml
+
+# To access the pod itself we need port-frowarding
+# The ClusterIP is used for internal communication between Microservices
+kubectl port-forward deployment/customer 8080:8080
+``` 
+
+check this uri :
+
+- http://localhost:8080/api/v1/customer
+- http://localhost:8080/api/v1/customer/1/orders
+
+![orders.png](images%2Forders.png)
+
+**Works Perfectly**
+
+``` 
+kubectl get pods 
+
+kubectl delete pod order-787794b8c-h8vp7
+kubectl delete pod order-787794b8c-wq9zf
+
+# displays new order pods
+kubectl get pods
+
+kubectl port-forward deployment/customer 8080:8080
+``` 
+check this uri :
+
+- http://localhost:8080/api/v1/customer
+- http://localhost:8080/api/v1/customer/1/orders
+
+![orders.png](images%2Forders.png)
+
+- **Still Works Perfectly with Service IP Address unlike when we used Pod IP Address**
+
+- **We can either use The Service Ip Address or the DNS of the  Service** 
+
+### NodePort Service
+
+- Allows us to open a port on all nodes
+- Port range: 30000-32767
+
+``` 
+kubectl get nodes -o wide
+``` 
+
+![getNodes.png](images%2FgetNodes.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

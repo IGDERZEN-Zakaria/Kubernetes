@@ -21,3 +21,22 @@ spec:
               cpu: "500m"
           ports:
             - containerPort: 8081
+# We can specify multiple port for our Pod
+#            - containerPort: 3000
+
+
+# we can create the order Service on a separate file , but we can do it in the same file by separating between them with ---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+spec:
+  type: ClusterIP
+  selector:
+# 'selector.app: order' means that this service will search for pods that have this label which is 'order'
+    app: order
+  ports:
+    - port: 80
+# targetPort must match -containerPort of our pod
+      targetPort: 8081

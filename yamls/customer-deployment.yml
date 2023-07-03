@@ -19,5 +19,16 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "500m"
+          env:
+            - name: ORDER_SERVICE
+              # we use the IP Address of the POD
+              #value: "10.244.0.7:8081"
+              # we use the IP Address of the Order Service
+              #value: "10.99.135.124:80"
+              # we use the DNS of the Order Service
+              #value: "order:80"
+              #we we put port = 80 it s the same as not specifying it which means  value: "order" <=> value: "order:80"
+              value: "order"
+
           ports:
             - containerPort: 8080
