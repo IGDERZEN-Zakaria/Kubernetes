@@ -818,23 +818,96 @@ check this uri :
 ### NodePort Service
 
 - Allows us to open a port on all nodes
-- Port range: 30000-32767
+- Port range: **[30000 - 32767]**
 
 ``` 
 kubectl get nodes -o wide
+kubectl get pods -o wide
 ``` 
 
 ![getNodes.png](images%2FgetNodes.png)
 
+<img src="images/NodePort.png" width="680" height="420"></img>
+
+### The Service will always make sure to reroute the traffic to the healthy pods 
+
+<img src="images/NodePort2.png" width="680" height="420"></img>
+
+### Definition of NodePort Service in yml configuration file
+
+<img src="images/NodePort3.png" width="680" height="400"></img>
+
+#### Disadvantages of NodePort
+
+- One Service per Port ( Later we will be seeing One Ingress and Multiple Services attached to it)
+- If Node IP Address changes then we have a problem
+- Cloud solutions like GKS & EKS offers scaling up and down so that if we lose a Node and new One is created
 
 
+After adding the NodePort Service to the customer-deployment.yml
+
+We Apply the updated Configuration
+``` 
+kubectl apply -f customer-deployment.yml 
+``` 
+
+``` 
+kubectl describe svc customer-node
+``` 
+
+![describeNodPort.png](images%2FdescribeNodPort.png)
+
+#### Accessing APi with NodePort Service
 
 
+``` 
+docker ps
+kubectl get nodes -o wide
+minikube ip
+minikube ip -n minikube-m02
+``` 
 
+![NodePortIp.png](images%2FNodePortIp.png)
 
+#### sending a request from minikube Node to minikube-m02 Node
 
+``` 
+minikube ssh
+$ curl localhost:30000/api/v1/customer
+$ curl 192.168.49.3:30000/api/v1/customer
+``` 
 
+#### SSH Access to minikube Node
 
+![NodePortSSH.png](images%2FNodePortSSH.png)
+
+#### SSH Access to minikube-m02 Node
+
+![NodePortSSH2.png](images%2FNodePortSSH2.png)
+
+``` 
+minikube service customer-node --url
+``` 
+
+![minikubeService.png](images%2FminikubeService.png)
+
+check this uri :
+
+- http://127.0.0.1:36151/api/v1/customer
+
+![minikubeserviceurl.png](images%2Fminikubeserviceurl.png)
+
+**Works Perfectly**
+
+``` 
+minikube service customer-node 
+``` 
+
+![minikubeservice2.png](images%2Fminikubeservice2.png)
+
+![minikubeservice2url.png](images%2Fminikubeservice2url.png)
+
+**Also Works Perfectly**
 
 
 
