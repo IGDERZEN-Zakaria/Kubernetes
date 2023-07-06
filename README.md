@@ -734,7 +734,7 @@ because the IP Address of the ORDER_SERVICE has changed (different pod than the 
 
 **That resumes why we should never use POD IP Address and use Services instead**
 
-### Cluster IP Service
+### ClusterIP Service
 
 - Default Kubernetes Service
 - Only Internal access. No External
@@ -742,7 +742,7 @@ because the IP Address of the ORDER_SERVICE has changed (different pod than the 
 
 <img src="images/SERVICE order.png" width="740" height="350"></img>
 
-Cluster IP Service will send the traffic from the Customer Microservice to any Pod that is healthy of Order Microservice
+ClusterIP Service will send the traffic from the Customer Microservice to any Pod that is healthy of Order Microservice
 
 We can send a request from the customer service to the order service using 
 
@@ -841,7 +841,7 @@ kubectl get pods -o wide
 
 - One Service per Port ( Later we will be seeing One Ingress and Multiple Services attached to it)
 - If Node IP Address changes then we have a problem
-- Cloud solutions like GKS & EKS offers scaling up and down so that if we lose a Node and new One is created
+- Cloud solutions like GKS & EKS offers scaling up and down so that if we lose a Node a new One is created
 
 
 After adding the NodePort Service to the customer-deployment.yml
@@ -869,7 +869,9 @@ minikube ip -n minikube-m02
 
 ![NodePortIp.png](images%2FNodePortIp.png)
 
-#### sending a request from minikube Node to minikube-m02 Node
+#### Communication between Minikube & Minikube-m02 Nodes
+
+#### SSH Access to minikube Node and sending request to Minikube-m02 Node
 
 ``` 
 minikube ssh
@@ -877,13 +879,20 @@ $ curl localhost:30000/api/v1/customer
 $ curl 192.168.49.3:30000/api/v1/customer
 ``` 
 
-#### SSH Access to minikube Node
-
 ![NodePortSSH.png](images%2FNodePortSSH.png)
 
-#### SSH Access to minikube-m02 Node
+#### SSH Access to minikube-m02 Node and sending request to Minikube Node
+
+``` 
+minikube ssh -n minikube-m02
+$ curl localhost:30000/api/v1/customer
+$ curl 192.168.49.2:30000/api/v1/customer
+``` 
 
 ![NodePortSSH2.png](images%2FNodePortSSH2.png)
+
+
+#### Accessing API with NodePort Service
 
 ``` 
 minikube service customer-node --url
@@ -909,6 +918,112 @@ minikube service customer-node
 
 **Also Works Perfectly**
 
+**<ins> Important Note :</ins>**
+
+When you use the minikube service command, it creates a **tunnel** between your **local machine** and the **Minikube cluster**. This tunnel allows you to access services running within the cluster using a local address.
+
+The address http://127.0.0.1:42417 is the local address where the service is accessible on your machine. Minikube dynamically assigns a port number (**42417** in this case) to map to the NodePort (30000) of your customer-node service.
+
+The reason why you don't see the address **10.106.168.180:30000** directly is that it represents the internal cluster IP and NodePort, which **may not be directly accessible** from your **local machine**. Minikube sets up the tunnel to provide a convenient way to access the service.
+
+
+#### Accessing NodePort Service with Cluster IP Address
+
+``` 
+kubectl get svc
+kubectl get pods
+kubectl exec -it order-787794b8c-mq7dt -- sh
+$ curl
+$ apk add curl
+
+# Accessing the NodePort Service with Cluster IP Address (Accessing the API Internally)
+# curl Cluster_IP_Addres:port/Api_Uri
+# in the cas we habe port=80 so no need to specify the port
+
+$ curl 10.106.168.180/api/v1/customer
+``` 
+
+![NodePort Access.png](images%2FNodePort%20Access.png)
+
+```
+kubectl exec -it order-787794b8c-mq7dt -- sh
+
+# curl DNS:port/Api_Uri
+
+$ curl customer-node/api/v1/customer
+``` 
+
+![NodePort Access 2.png](images%2FNodePort%20Access%202.png)
+
+### LoadBalancer Service
+
+- Standard way of exposing Applications to the internet
+- Creates a load balancer **per service**
+- **AWS & GCP** - Network Load Balancer **NLB**
+- **MINIKUBE** - minikube tunnel (Because we are not running Kubernetes on the CLoud)
+
+check this uri for documentation:
+
+**https://minikube.sigs.k8s.io/docs/handbook/accessing**
+
+- Creating ClusterIP Service for Customer Pod in customer-deployment.yml
+- Creating frontend Pod in frontend.yml
+- Creating LoadBalancer Service to Access Frontend Pod in frontend.yml
+
+```
+kubectl apply -f customer-deployment.yml
+kubectl apply -f frontend.yml
+kubectl get svc
+```
+
+We notice that we have the value of <**pending**> ExternalIP for our LoadBalancer Service (frontend)
+
+
+![LOadBalancer1.png](images%2FLOadBalancer1.png)
+
+- We open a separate Terminal and 
+
+```
+minikube tunnel
+```
+
+![LoadBalancer2.png](images%2FLoadBalancer2.png)
+
+- We go back to first Terminal 
+
+```
+kubectl get svc
+```
+
+![LOadBalancer3.png](images%2FLOadBalancer3.png)
+
+We notice that we have an ExternalIP for our LoadBalancer Service (frontend)
+
+We access the uri 
+
+**http://127.0.0.1/**
+
+### Default Kubernetes Service
+
+```
+kubectl get svc
+```
+
+![defaultService.png](images%2FdefaultService.png)
+
+**the kubernetes service is automatically created for us in order to communicate to the kubernetes Api 
+from within the App** 
+
+
+```
+kubectl get endpoint
+```
+
+
+
+
+
+
 
 
 
@@ -923,7 +1038,7 @@ minikube service customer-node
 
 in case you get ImagePullBackoff 
 
-check this video link : https://www.youtube.com/watch?v=1q7RLvwdkyo
+check this video link : **https://www.youtube.com/watch?v=1q7RLvwdkyo**
 
 ### Kubernetes Plugin
 
@@ -931,7 +1046,11 @@ to add a new template  check this image
 
 ![Templates.png](images%2FTemplates.png)
 
+#### stop apache2 service in localhost 
 
+```
+sudo systemctl stop apache2
+```
 
 
 

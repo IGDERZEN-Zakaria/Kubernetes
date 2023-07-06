@@ -29,7 +29,6 @@ spec:
               #value: "order:80"
               #we we put port = 80 it s the same as not specifying it which means  value: "order" <=> value: "order:80"
               value: "order"
-
           ports:
             - containerPort: 8080
               
@@ -46,4 +45,19 @@ spec:
       - port: 80
         targetPort: 8080
 # if nodePort is not specified a random port between 30000-32767 is automatically chosen
+# Only 1 Port per Service
         nodePort: 30000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer
+#  namespace: engineering
+spec:
+  type: ClusterIP
+  selector:
+    app: customer
+  ports:
+    - port: 80
+      targetPort: 8080
